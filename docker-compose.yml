@@ -1,0 +1,49 @@
+version: '3'
+
+volumes:
+  pgdata:
+
+services:
+  # infrastructure
+  db:
+    image: postgres:10.3-alpine
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: sivdev_user
+      POSTGRES_PASSWORD: sivdev_pass
+    ports:
+      - "9432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+
+  # airflow
+  webserver:
+    build:
+      context: .
+    depends_on:
+      - db
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__FERNET_KEY: $AIRFLOW__CORE__FERNET_KEY
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://sivdev_user:sivdev_pass@db:5432/airflow
+    volumes:
+      - ./dags:/usr/local/airflow/dags
+      - ./plugins:/usr/local/airflow/plugins
+      - ./airflow-logs:/usr/local/airflow/logs
+    ports:
+      - "8080:8080"
+    command: webserver
+  scheduler:
+    build:
+      context: .
+    depends_on:
+      - webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__FERNET_KEY: $AIRFLOW__CORE__FERNET_KEY
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://sivdev_user:sivdev_pass@db:5432/airflow
+    volumes:
+      - ./dags:/usr/local/airflow/dags
+      - ./plugins:/usr/local/airflow/plugins
+      - ./airflow-logs:/usr/local/airflow/logs
+    command: "scheduler"
