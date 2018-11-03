@@ -1,4 +1,4 @@
-FROM python:3.6.6-stretch
+FROM python:3.6.7-stretch
 
 LABEL maintainer="Aly Sivji <alysivji@gmail.com>" \
     description="Development image for Airflow practice project"
