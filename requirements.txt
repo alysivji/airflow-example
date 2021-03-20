@@ -34,7 +34,7 @@ html5lib==1.0.1
 idna==2.7
 iso8601==0.1.12
 itsdangerous==0.24
-Jinja2==2.8.1
+Jinja2==2.11.3
 lockfile==0.12.2
 lxml==3.8.0
 Mako==1.0.7
